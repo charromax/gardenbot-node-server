@@ -144,7 +144,13 @@ module.exports = {
 			});
 			await savedUser.save();
 			//TODO: PUB SUB
-			return savedUser.devices[0];
+
+			return savedUser.devices[0].id;
+		},
+	},
+	Subscription: {
+		newDevice: {
+			subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('NEW_DEVICE'),
 		},
 	},
 };

@@ -91,6 +91,7 @@ module.exports = gql`
 
 	type Subscription {
 		newPost: Post!,
-		newMeasure: Measure!
+		newMeasure: Measure!,
+		newDevice: Device!
 	}
 `;
