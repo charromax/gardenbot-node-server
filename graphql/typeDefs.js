@@ -92,6 +92,14 @@ module.exports = gql`
 	type Subscription {
 		newPost: Post!,
 		newMeasure: Measure!,
-		newDevice: Device!
-	}
+		newDevice: Device!,
+		subscribeToSensors(topic: String!): Measure!,
+
+	},
+
+	schema {
+        query: Query
+		mutation: Mutation
+        subscription: Subscription
+    }
 `;

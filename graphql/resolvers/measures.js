@@ -7,11 +7,11 @@ module.exports = {
 			_,
 			{ dataInput: { airTemp, airHum, soilHum, deviceId, username } }
 		) {
+		}
 			const user = await User.findOne({ username });
 			console.log(user);
 			if (!user) {
 				throw new Error('Username is invalid');
-			}
 			const device = user.devices.find((ownedDev) => ownedDev.id === deviceId);
 
 			if (!device) throw new Error('Invalid/Unregistered device');
