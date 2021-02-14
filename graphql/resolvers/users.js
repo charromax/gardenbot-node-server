@@ -26,8 +26,8 @@ module.exports = {
 	Mutation: {
 		/**
 		 * User login
-		 * @param {String} username = a username
-		 * @param {String} password = user password
+		 * @param {String} username a username
+		 * @param {String} password user password
 		 * @throws {UserInputError}
 		 */
 		async login(_, { username, password }) {
