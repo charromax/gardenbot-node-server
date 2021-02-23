@@ -1,11 +1,13 @@
 const Measure = require('../../models/Measure');
 const User = require('../../models/User');
+const checkAuth = require('../../util/check-auth');
 
 module.exports = {
 	Mutation: {
 		async addMeasure(
 			_,
-			{ dataInput: { airTemp, airHum, soilHum, deviceId, username } }
+			{ airTemp, airHum, soilHum, deviceId, username },
+			context
 		) {
 			const user = await User.findOne({ username });
 			console.log(user);
@@ -18,14 +20,16 @@ module.exports = {
 
 			const newMeasure = new Measure({
 				createdAt: new Date().toISOString(),
-				deviceId,
-				airTemp,
-				airHum,
-				soilHum,
+				deviceId: deviceId,
+				airTemp: airTemp,
+				airHum: airHum,
+				soilHum: soilHum,
 			});
 
 			const measure = await newMeasure.save();
-			//TODO: PUB SUB
+			context.pubsub.publish('NEW_MEASURE', {
+				newMeasure: measure,
+			});
 			return measure;
 		},
 	},
@@ -36,49 +40,23 @@ module.exports = {
 		 * @param {*} _
 		 * @param {String} deviceId
 		 */
-		async getMeasures(_, { deviceId }) {
-			try {
-				const allMeasures = await Measure.find({ deviceId: deviceId }).sort({
-					createdAt: -1,
-				});
+		async getMeasures(_, { deviceId }, context) {
+			const user = checkAuth(context);
 
-				console.log(allMeasures);
+			if (user) {
+				try {
+					const allMeasures = await Measure.find({ deviceId: deviceId }).sort({
+						createdAt: -1,
+					});
 
-				return allMeasures;
-			} catch (err) {
-				throw new Error(err);
+					console.log(allMeasures);
+					return allMeasures;
+				} catch (err) {
+					throw new Error(err);
+				}
 			}
 		},
 	},
-	// Mutation: {
-	// 	async addMeasure(
-	// 		_,
-	// 		{
-	// 			doc: {
-	// 				data: { device_id, rel_humidity, temperature, soil_humidity },
-	// 			},
-	// 		},
-	// 		context
-	// 	) {
-	// 		try {
-	// 			const newMeasure = Measure({
-	// 				createdAt: new Date().toISOString(),
-	// 				deviceId: device_id,
-	// 				airTemp: temperature,
-	// 				airHum: rel_humidity,
-	// 				soilHum: soil_humidity,
-	// 			});
-	// 			const measure = await newMeasure.save();
-
-	// 			context.pubsub.publish('NEW_MEASURE', {
-	// 				newMeasure: measure,
-	// 			});
-
-	// 		} catch (err) {
-	// 			throw new Error(err);
-	// 		}
-	// 	},
-	// },
 	Subscription: {
 		newMeasure: {
 			subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('NEW_MEASURE'),

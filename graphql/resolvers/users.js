@@ -1,14 +1,20 @@
 const User = require('../../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { UserInputError } = require('apollo-server');
+const { UserInputError, transformSchema } = require('apollo-server');
 
-const { SECRET_KEY, ERROR_LOGIN, USER_NOT_FOUND, WRONG_PWD } = require('../../config');
+const {
+	SECRET_KEY,
+	ERROR_LOGIN,
+	USER_NOT_FOUND,
+	WRONG_PWD,
+} = require('../../config');
 const {
 	validateRegisterInput,
 	validateLoginInput,
 } = require('../../util/validators');
 const checkAuth = require('../../util/check-auth');
+const Device = require('../../models/Device');
 
 function generateToken(user) {
 	return jwt.sign(
@@ -96,7 +102,7 @@ module.exports = {
 				email,
 				username,
 				password,
-				devices:[],
+				devices: [],
 				createdAt: new Date().toISOString(),
 			});
 
@@ -111,22 +117,12 @@ module.exports = {
 		},
 
 		/**
-		 * Registers new device for user if already logged in
+		 * Registers new device
 		 *
 		 * @param {String} deviceName
-		 * @param {Context} context
 		 * @throws {UserInputError}
 		 */
-		async registerNewDevice(_, { deviceName }, context) {
-			const authUser = checkAuth(context);
-			if (!authUser) {
-				throw new UserInputError('User not logged in', {
-					error: {
-						deviceName:
-							'This username is not logged in, please register new user first or try again',
-					},
-				});
-			}
+		async registerNewDevice(_, { deviceName }) {
 			if (deviceName.trim() === '') {
 				throw new UserInputError('Empty device name', {
 					errors: {
@@ -134,18 +130,42 @@ module.exports = {
 					},
 				});
 			}
-			console.log(authUser);
-			const savedUser = await User.findById(authUser.id);
-			console.log(savedUser);
-
-			savedUser.devices.unshift({
-				deviceName,
+			const device = new Device({
+				deviceName: deviceName,
 				createdAt: new Date().toISOString(),
 			});
-			await savedUser.save();
-			//TODO: PUB SUB
 
-			return savedUser.devices[0].id;
+			const newDevice = await device.save();
+			return newDevice._id;
+		},
+
+		/**
+		 * Activates a newly registered device
+		 * 
+		 * @param {String} deviceName: device S/N as printed in box 
+		 * @param {String} userId: valid registered user id 
+		 * @param {Context} context: requires Token
+		 */
+		async activateDevice(_, { deviceName, userId }, context) {
+			if (deviceName.trim() === '') {
+				throw new UserInputError('Empty device name', {
+					errors: {
+						body: 'Device name must not be empty',
+					},
+				});
+			}
+			const validateUser = checkAuth(context);
+			const device = Device.findOne({ deviceName });
+			if (device && validateUser) {
+				const user = await User.findById(userId);
+				if (user) {
+					user.devices.unshift(device.id);
+				}
+				const res = await user.save();
+				return device;
+			} else {
+				throw new Error('Invalid device name or user')
+			}
 		},
 	},
 	Subscription: {

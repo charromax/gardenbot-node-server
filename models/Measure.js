@@ -6,6 +6,11 @@ const measureSchema = mongoose.Schema({
 	airTemp: Number,
 	airHum: Number,
 	soilHum: Number,
+	username: String,
+	user: {
+		type: mongoose.Schema.Types.ObjectID,
+		ref: "users",
+	},
 });
 
 module.exports = mongoose.model('Measure', measureSchema);

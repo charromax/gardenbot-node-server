@@ -7,8 +7,7 @@ const userSchema = mongoose.Schema({
 	createdAt: String,
 	devices: [
 		{
-			createdAt: String,
-			deviceName: String,
+			deviceId: String
 		},
 	],
 });

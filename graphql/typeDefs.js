@@ -32,7 +32,7 @@ module.exports = gql`
 		username: String!
 		createdAt: String!
 		devices: [Device]!
-        deviceCount: Int!
+		deviceCount: Int!
 	}
 
 	type Device {
@@ -45,9 +45,10 @@ module.exports = gql`
 		id: ID!
 		createdAt: String!
 		deviceId: ID!
-        airTemp: Float!
+		airTemp: Float!
 		airHum: Float!
 		soilHum: Float!
+		username: String!
 	}
 
 	input RegisterInput {
@@ -56,26 +57,18 @@ module.exports = gql`
 		confirmPassword: String!
 		email: String!
 	}
-    
-    input MeasureInput {
-		airTemp: Float!
-		airHum: Float!
-		soilHum: Float!
-        deviceId: ID!
-        username:String!
-	}
 
 	type Query {
-        #FORUM QUERIES
+		#FORUM QUERIES
 		getPosts: [Post]
 		getPost(postId: ID!): Post
 
-        #GARDENBOT QUERIES
-        getMeasures(deviceId: ID!):[Measure]!
+		#GARDENBOT QUERIES
+		getMeasures(deviceId: ID!): [Measure]!
 	}
 
 	type Mutation {
-        # FORUM MUTATIONS
+		# FORUM MUTATIONS
 		register(registerInput: RegisterInput): User!
 		login(username: String!, password: String!): User!
 		createPost(body: String!): Post!
@@ -84,22 +77,28 @@ module.exports = gql`
 		deleteComment(postId: ID!, commentId: ID!): Post!
 		likeDislike(postId: ID!): Post!
 
-        # GARDENBOT MUTATIONS
+		# GARDENBOT MUTATIONS
 		registerNewDevice(deviceName: String!): Device!
-        addMeasure(dataInput: MeasureInput!):Measure!
+		activateDevice(deviceName: String!, userId: ID!): Device!
+		addMeasure(
+			airTemp: Float!
+			airHum: Float!
+			soilHum: Float!
+			deviceId: String!
+			username: String!
+		): Measure!
 	}
 
 	type Subscription {
-		newPost: Post!,
-		newMeasure: Measure!,
-		newDevice: Device!,
-		subscribeToSensors(topic: String!): Measure!,
-
-	},
+		newPost: Post!
+		newMeasure: Measure!
+		newDevice: Device!
+		subscribeToSensors(topic: String!): Measure!
+	}
 
 	schema {
-        query: Query
+		query: Query
 		mutation: Mutation
-        subscription: Subscription
-    }
+		subscription: Subscription
+	}
 `;
