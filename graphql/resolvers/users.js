@@ -1,7 +1,11 @@
 const User = require('../../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { UserInputError, transformSchema } = require('apollo-server');
+const {
+	UserInputError,
+	transformSchema,
+	AuthenticationError,
+} = require('apollo-server');
 
 const {
 	SECRET_KEY,
@@ -9,26 +13,57 @@ const {
 	USER_NOT_FOUND,
 	WRONG_PWD,
 } = require('../../config');
+
 const {
 	validateRegisterInput,
 	validateLoginInput,
 } = require('../../util/validators');
+
 const checkAuth = require('../../util/check-auth');
+const decodeToken = require('../../util/decode_token');
 const Device = require('../../models/Device');
 
-function generateToken(user) {
+function generateToken(user, type = 'access') {
+	const expiration = type === 'access' ? '1d' : '7d';
 	return jwt.sign(
 		{
 			id: user.id,
-			email: user.email,
 			username: user.username,
+			count: user.count,
 		},
 		SECRET_KEY,
-		{ expiresIn: '1h' }
+		{ expiresIn: expiration }
 	);
 }
 
 module.exports = {
+	Query: {
+		async refreshToken(_, __, context) {
+			//validate incoming token
+			//decode user data and check against db
+			//issue new token
+
+			try {
+				const validateUser = checkAuth(context);
+				console.log(validateUser);
+				const user = await User.findById(validateUser.id);
+
+				if (
+					user.username === validateUser.username &&
+					user.count === validateUser.count
+				) {
+					user.count++;
+					const token = generateToken(user);
+					return token;
+				} else {
+					throw new Error("Token data doesn't match user");
+				}
+			} catch (error) {
+				console.log(error);
+				throw new Error('Invalid token, please login again');
+			}
+		},
+	},
 	Mutation: {
 		/**
 		 * User login
@@ -56,11 +91,13 @@ module.exports = {
 				errors.general = WRONG_PWD;
 				throw new UserInputError(WRONG_PWD, { errors });
 			}
-			const token = generateToken(user);
+			const accessToken = generateToken(user);
+			const refreshToken = generateToken(user, 'refresh');
 			return {
 				...user._doc,
 				id: user._id,
-				token,
+				token: accessToken,
+				rtoken: refreshToken,
 			};
 		},
 
@@ -141,9 +178,9 @@ module.exports = {
 
 		/**
 		 * Activates a newly registered device
-		 * 
-		 * @param {String} deviceName: device S/N as printed in box 
-		 * @param {String} userId: valid registered user id 
+		 *
+		 * @param {String} deviceName: device S/N as printed in box
+		 * @param {String} userId: valid registered user id
 		 * @param {Context} context: requires Token
 		 */
 		async activateDevice(_, { deviceName, userId }, context) {
@@ -164,7 +201,7 @@ module.exports = {
 				const res = await user.save();
 				return device;
 			} else {
-				throw new Error('Invalid device name or user')
+				throw new Error('Invalid device name or user');
 			}
 		},
 	},

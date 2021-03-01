@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const DeviceSchema = mongoose.Schema({
+const deviceSchema = mongoose.Schema({
 	deviceName: String,
 	createdAt: String,
 });

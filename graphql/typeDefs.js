@@ -33,6 +33,7 @@ module.exports = gql`
 		createdAt: String!
 		devices: [Device]!
 		deviceCount: Int!
+		count: Int!
 	}
 
 	type Device {
@@ -65,6 +66,7 @@ module.exports = gql`
 
 		#GARDENBOT QUERIES
 		getMeasures(deviceId: ID!): [Measure]!
+		refreshToken: String!
 	}
 
 	type Mutation {
@@ -87,13 +89,14 @@ module.exports = gql`
 			deviceId: String!
 			username: String!
 		): Measure!
+
+		
 	}
 
 	type Subscription {
 		newPost: Post!
 		newMeasure: Measure!
 		newDevice: Device!
-		subscribeToSensors(topic: String!): Measure!
 	}
 
 	schema {
