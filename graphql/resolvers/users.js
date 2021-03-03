@@ -79,6 +79,7 @@ module.exports = {
 			// Validate user input
 			// Check users existance
 			// Compare passwords
+			// Reset token count
 
 			const { valid, errors } = validateLoginInput(username, password);
 			if (!valid) {
@@ -95,10 +96,12 @@ module.exports = {
 				errors.general = WRONG_PWD;
 				throw new UserInputError(WRONG_PWD, { errors });
 			}
-			const accessToken = generateToken(user);
+			user.count = 0
+			const savedUser = await user.save()
+			const accessToken = generateToken(savedUser);
 			return {
-				...user._doc,
-				id: user._id,
+				...savedUser._doc,
+				id: savedUser._id,
 				token: accessToken
 			};
 		},
