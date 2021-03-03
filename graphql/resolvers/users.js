@@ -20,11 +20,11 @@ const {
 } = require('../../util/validators');
 
 const checkAuth = require('../../util/check-auth');
-const decodeToken = require('../../util/decode_token');
+const decodeToken = require('../../util/decode-token');
 const Device = require('../../models/Device');
 
 function generateToken(user, type = 'access') {
-	const expiration = type === 'access' ? '1d' : '7d';
+	const expiration = type === 'access' ? '10s' : '7d';
 	return jwt.sign(
 		{
 			id: user.id,
@@ -44,16 +44,20 @@ module.exports = {
 			//issue new token
 
 			try {
-				const validateUser = checkAuth(context);
-				console.log(validateUser);
-				const user = await User.findById(validateUser.id);
+				const { id, username, count } = decodeToken(context);
+				const user = await User.findById(id);
+
+				console.log("user: " + user);
+				console.log("validateUser: " + username + count);
 
 				if (
-					user.username === validateUser.username &&
-					user.count === validateUser.count
+					user.username === username &&
+					user.count === count
 				) {
 					user.count++;
-					const token = generateToken(user);
+					const savedUser = await user.save()
+					const token = generateToken(savedUser);
+					console.log("generated token");
 					return token;
 				} else {
 					throw new Error("Token data doesn't match user");
@@ -92,12 +96,10 @@ module.exports = {
 				throw new UserInputError(WRONG_PWD, { errors });
 			}
 			const accessToken = generateToken(user);
-			const refreshToken = generateToken(user, 'refresh');
 			return {
 				...user._doc,
 				id: user._id,
-				token: accessToken,
-				rtoken: refreshToken,
+				token: accessToken
 			};
 		},
 
