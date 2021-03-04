@@ -24,7 +24,7 @@ const decodeToken = require('../../util/decode-token');
 const Device = require('../../models/Device');
 
 function generateToken(user, type = 'access') {
-	const expiration = type === 'access' ? '10s' : '7d';
+	const expiration = type === 'access' ? '1d' : '7d';
 	return jwt.sign(
 		{
 			id: user.id,
@@ -178,7 +178,7 @@ module.exports = {
 			});
 
 			const newDevice = await device.save();
-			return newDevice._id;
+			return newDevice;
 		},
 
 		/**
@@ -189,6 +189,7 @@ module.exports = {
 		 * @param {Context} context: requires Token
 		 */
 		async activateDevice(_, { deviceName, userId }, context) {
+			//TODO: mark activated devices so as not to allow duplication
 			if (deviceName.trim() === '') {
 				throw new UserInputError('Empty device name', {
 					errors: {
@@ -197,10 +198,13 @@ module.exports = {
 				});
 			}
 			const validateUser = checkAuth(context);
-			const device = Device.findOne({ deviceName });
+			const device = await Device.findOne({ deviceName });
+			console.log(device);
 			if (device && validateUser) {
 				const user = await User.findById(userId);
+				console.log(user);
 				if (user) {
+					console.log("adding to list " + device);
 					user.devices.unshift(device.id);
 				}
 				const res = await user.save();
