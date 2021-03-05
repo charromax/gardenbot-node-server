@@ -98,6 +98,7 @@ module.exports = {
 			}
 			user.count = 0
 			const savedUser = await user.save()
+			console.log(savedUser)
 			const accessToken = generateToken(savedUser);
 			return {
 				...savedUser._doc,

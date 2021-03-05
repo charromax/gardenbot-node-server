@@ -31,7 +31,7 @@ module.exports = gql`
 		token: String!
 		username: String!
 		createdAt: String!
-		devices: [Device]!
+		devices: [ID]!
 		deviceCount: Int!
 		count: Int!
 	}
