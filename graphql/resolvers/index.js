@@ -3,6 +3,7 @@ const usersResolvers = require('./users');
 const commentsResolvers = require('./comments');
 const likesResolvers = require('./likes');
 const measuresResolvers = require('./measures');
+const devicesResolvers = require('./devices')
 
 module.exports = {
 	Post: {
@@ -23,11 +24,12 @@ module.exports = {
 		...commentsResolvers.Mutation,
 		...likesResolvers.Mutation,
 		...measuresResolvers.Mutation,
+		...devicesResolvers.Mutation
 	},
 
 	Subscription: {
 		...postsResolvers.Subscription,
 		...measuresResolvers.Subscription,
-		...usersResolvers.Subscription,
+		...devicesResolvers.Subscription
 	},
 };

@@ -1,25 +1,22 @@
+const Device = require('../../models/Device');
 const Measure = require('../../models/Measure');
 const User = require('../../models/User');
 const checkAuth = require('../../util/check-auth');
+const devices = require('./devices');
 
 module.exports = {
 	Mutation: {
 		async addMeasure(
 			_,
-			{ airTemp, airHum, soilHum, deviceId, username },
-			context
+			{ airTemp, airHum, soilHum, deviceId }, context
 		) {
-			const user = await User.findOne({ username });
-			console.log(user);
-			if (!user) {
-				throw new Error('Username is invalid');
-			}
-			const device = user.devices.find((ownedDev) => ownedDev.id === deviceId);
+
+			const device = await Device.findById(deviceId)
 
 			if (!device) throw new Error('Invalid/Unregistered device');
 
 			const newMeasure = new Measure({
-				createdAt: new Date().toISOString,
+				createdAt: new Date().toISOString(),
 				deviceId: deviceId,
 				airTemp: airTemp,
 				airHum: airHum,

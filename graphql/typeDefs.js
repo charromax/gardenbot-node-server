@@ -49,7 +49,6 @@ module.exports = gql`
 		airTemp: Float!
 		airHum: Float!
 		soilHum: Float!
-		username: String!
 	}
 
 	input RegisterInput {
@@ -87,7 +86,6 @@ module.exports = gql`
 			airHum: Float!
 			soilHum: Float!
 			deviceId: String!
-			username: String!
 		): Measure!
 
 		
