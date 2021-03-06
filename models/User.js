@@ -11,11 +11,7 @@ const userSchema = mongoose.Schema({
 	password: String,
 	email: String,
 	createdAt: String,
-	devices: [
-		{
-			deviceId: String
-		},
-	],
+	devices: [String],
 	count: { type: Number, default: 0 }
 });
 
