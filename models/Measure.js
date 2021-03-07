@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const measureSchema = mongoose.Schema({
-	createdAt: String,
+	createdAt: { type: String, default: new Date().toISOString() },
 	deviceId: String,
 	airTemp: Number,
 	airHum: Number,

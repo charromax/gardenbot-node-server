@@ -31,7 +31,7 @@ module.exports = gql`
 		token: String!
 		username: String!
 		createdAt: String!
-		devices: [ID]!
+		devices: [Device]!
 		deviceCount: Int!
 		count: Int!
 	}
@@ -40,6 +40,7 @@ module.exports = gql`
 		id: ID!
 		deviceName: String!
 		createdAt: String!
+		isActivated: Boolean
 	}
 
 	type Measure {
@@ -66,6 +67,7 @@ module.exports = gql`
 		#GARDENBOT QUERIES
 		getMeasures(deviceId: ID!): [Measure]!
 		refreshToken: String!
+		getAllDevices: [Device]!
 	}
 
 	type Mutation {
@@ -87,6 +89,7 @@ module.exports = gql`
 			soilHum: Float!
 			deviceId: String!
 		): Measure!
+		renameDevice(deviceId:ID!, newName:String!): User!
 
 		
 	}

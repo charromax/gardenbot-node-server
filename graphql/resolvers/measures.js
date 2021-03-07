@@ -16,7 +16,6 @@ module.exports = {
 			if (!device) throw new Error('Invalid/Unregistered device');
 
 			const newMeasure = new Measure({
-				createdAt: new Date().toISOString(),
 				deviceId: deviceId,
 				airTemp: airTemp,
 				airHum: airHum,

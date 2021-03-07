@@ -5,14 +5,21 @@
  */
 
 const mongoose = require('mongoose');
+const Device = require('./Device');
 
 const userSchema = mongoose.Schema({
 	username: String,
 	password: String,
 	email: String,
-	createdAt: String,
-	devices: [String],
-	count: { type: Number, default: 0 }
+	createdAt: { type: String, default: new Date().toISOString() },
+	devices: [
+		{
+			createdAt: String,
+			deviceName: String,
+			_id: String
+		},
+	],
+	count: { type: Number, default: 0 },
 });
 
 module.exports = mongoose.model('User', userSchema);

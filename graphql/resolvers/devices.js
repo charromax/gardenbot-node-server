@@ -3,6 +3,21 @@ const Device = require('../../models/Device');
 const User = require('../../models/User');
 
 module.exports = {
+	Query: {
+		async getAllDevices(_, __, context) {
+			try {
+				const { userId } = checkAuth(context);
+				if (!userId) {
+					throw new Error('Invalid/Unregistered user id');
+				} else {
+					const user = await User.findById(userId);
+					return user.devices;
+				}
+			} catch (error) {
+				throw new Error(error);
+			}
+		},
+	},
 	Mutation: {
 		/**
 		 * Registers new device
@@ -20,11 +35,49 @@ module.exports = {
 			}
 			const device = new Device({
 				deviceName: deviceName,
-				createdAt: new Date().toISOString(),
 			});
 
 			const newDevice = await device.save();
 			return newDevice;
+		},
+
+		/**
+		 *  Rename devices in users list for easier identification
+		 *
+		 * @param {String} deviceId: db-issued ID for the device we want to update
+		 * @param {String} newName: new name for the device
+		 * @param {Context} context: token required
+		 * @returns User
+		 */
+		async renameDevice(_, { deviceId, newName }, context) {
+			try {
+				if (deviceId.trim() === '' || newName.trim() === '') {
+					throw new UserInputError('Empty device name or id', {
+						errors: {
+							body: 'Device name and id must not be empty',
+						},
+					});
+				} else {
+					const { id } = checkAuth(context);
+					if (!id) {
+						throw new Error('Invalid/Unregistered user');
+					} else {
+						const savedDevice = await Device.findById(deviceId);
+						savedDevice.deviceName = newName;
+						const updateDevice = await savedDevice.save();
+						const savedUser = await User.findById(id);
+						const index = savedUser.devices.findIndex(
+							(dev) => dev._id === deviceId
+						);
+						savedUser.devices.splice(index, 1);
+						savedUser.devices.push(updateDevice);
+						const updatedUser = await savedUser.save();
+						return updatedUser;
+					}
+				}
+			} catch (error) {
+				throw new Error(error);
+			}
 		},
 
 		/**
@@ -35,7 +88,6 @@ module.exports = {
 		 * @param {Context} context: requires Token
 		 */
 		async activateDevice(_, { deviceName, userId }, context) {
-			//TODO: mark activated devices so as not to allow duplication
 			if (deviceName.trim() === '') {
 				throw new UserInputError('Empty device name', {
 					errors: {
@@ -47,11 +99,12 @@ module.exports = {
 			const device = await Device.findOne({ deviceName });
 			console.log(device);
 			if (device && validateUser) {
+				device.isActivated = true;
+				const activeDevice = await device.save();
 				const user = await User.findById(userId);
-				console.log(user);
 				if (user) {
 					console.log('adding to list ' + device);
-					user.devices.unshift(device.id);
+					user.devices.unshift(activeDevice);
 				}
 				const res = await user.save();
 				return device;
