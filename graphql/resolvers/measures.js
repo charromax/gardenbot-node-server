@@ -1,3 +1,4 @@
+const { withFilter } = require('graphql-subscriptions');
 const Device = require('../../models/Device');
 const Measure = require('../../models/Measure');
 const User = require('../../models/User');
@@ -55,7 +56,12 @@ module.exports = {
 	},
 	Subscription: {
 		newMeasure: {
-			subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('NEW_MEASURE'),
+			subscribe: withFilter(
+				(_, __, { pubsub }) => pubsub.asyncIterator('NEW_MEASURE'),
+				(payload, variables) => {
+					return (payload.newMeasure.deviceId === variables.devId)
+				}
+			)
 		},
 	},
 };

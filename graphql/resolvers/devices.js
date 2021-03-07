@@ -1,6 +1,7 @@
 const checkAuth = require('../../util/check-auth');
 const Device = require('../../models/Device');
 const User = require('../../models/User');
+const { withFilter } = require('apollo-server');
 
 module.exports = {
 	Query: {
@@ -25,7 +26,7 @@ module.exports = {
 		 * @param {String} deviceName
 		 * @throws {UserInputError}
 		 */
-		async registerNewDevice(_, { deviceName }) {
+		async registerNewDevice(_, { deviceName }, context) {
 			if (deviceName.trim() === '') {
 				throw new UserInputError('Empty device name', {
 					errors: {
@@ -37,8 +38,11 @@ module.exports = {
 				deviceName: deviceName,
 			});
 
-			const newDevice = await device.save();
-			return newDevice;
+			const saveDevice = await device.save();
+			context.pubsub.publish('NEW_DEVICE', {
+				newDevice: saveDevice,
+			});
+			return saveDevice;
 		},
 
 		/**
@@ -115,7 +119,12 @@ module.exports = {
 	},
 	Subscription: {
 		newDevice: {
-			subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('NEW_DEVICE'),
+			subscribe: withFilter(
+				(_, __, { pubsub }) => pubsub.asyncIterator('NEW_DEVICE'),
+				(payload, variables) => {
+					return (payload.newDevice.deviceName === variables.devName)
+				}
+			)
 		},
 	},
 };

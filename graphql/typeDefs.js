@@ -96,8 +96,8 @@ module.exports = gql`
 
 	type Subscription {
 		newPost: Post!
-		newMeasure: Measure!
-		newDevice: Device!
+		newMeasure(devId:ID!): Measure!
+		newDevice(devName: String!): Device!
 	}
 
 	schema {
