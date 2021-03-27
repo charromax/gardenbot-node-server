@@ -87,7 +87,7 @@ module.exports = {
 		/**
 		 * Activates a newly registered device
 		 *
-		 * @param {String} deviceName: device S/N as printed in box
+		 * @param {String} deviceName: device S/N as printed in box(now using MAC address)
 		 * @param {String} userId: valid registered user id
 		 * @param {Context} context: requires Token
 		 */
