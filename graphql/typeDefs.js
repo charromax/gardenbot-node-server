@@ -87,7 +87,7 @@ module.exports = gql`
 			airTemp: Float!
 			airHum: Float!
 			soilHum: Float!
-			deviceId: String!
+			deviceId: ID!
 		): Measure!
 		renameDevice(deviceId:ID!, newName:String!): User!
 
