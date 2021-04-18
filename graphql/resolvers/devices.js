@@ -105,11 +105,9 @@ module.exports = {
 			if (device && validateUser) {
 				device.isActivated = true;
 				const activeDevice = await device.save();
-				const user = await User.findById(userId);
-				if (user) {
-					console.log('adding to list ' + device);
-					user.devices.unshift(activeDevice);
-				}
+				const user = await User.findByIdAndUpdate(userId, {
+					$push: { devices: device },
+				});
 				const res = await user.save();
 				return device;
 			} else {
@@ -122,9 +120,9 @@ module.exports = {
 			subscribe: withFilter(
 				(_, __, { pubsub }) => pubsub.asyncIterator('NEW_DEVICE'),
 				(payload, variables) => {
-					return (payload.newDevice.deviceName === variables.devName)
+					return payload.newDevice.deviceName === variables.devName;
 				}
-			)
+			),
 		},
 	},
 };
