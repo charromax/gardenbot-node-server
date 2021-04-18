@@ -12,13 +12,7 @@ const userSchema = mongoose.Schema({
 	password: String,
 	email: String,
 	createdAt: { type: String, default: new Date().toISOString() },
-	devices: [
-		{
-			createdAt: String,
-			deviceName: String,
-			_id: String
-		},
-	],
+	devices: [{ type: Schema.Types.ObjectId, ref: 'Device' }],
 	count: { type: Number, default: 0 },
 });
 

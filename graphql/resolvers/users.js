@@ -84,7 +84,7 @@ module.exports = {
 				throw new UserInputError(ERROR_LOGIN, { errors });
 			}
 
-			const user = await User.findOne({ username });
+			const user = await User.findOne({ username }).populate('devices');
 			if (!user) {
 				errors.general = USER_NOT_FOUND;
 				throw new UserInputError(USER_NOT_FOUND, { errors });
