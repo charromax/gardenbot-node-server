@@ -65,7 +65,7 @@ module.exports = gql`
 	}
 	
 	input Payload {
-		device_id: ID!
+		deviceId: ID!
 		type: String!
 		order: Order!
 	}
