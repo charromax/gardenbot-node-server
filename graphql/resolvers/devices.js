@@ -2,6 +2,7 @@ const checkAuth = require('../../util/check-auth');
 const Device = require('../../models/Device');
 const User = require('../../models/User');
 const { withFilter } = require('apollo-server');
+const mqtt = require('async-mqtt');
 
 module.exports = {
 	Query: {
@@ -112,6 +113,26 @@ module.exports = {
 				return device;
 			} else {
 				throw new Error('Invalid device name or user');
+			}
+		},
+		async sendMqttOrder(_, { order }, context) {
+			const validateUser = checkAuth(context);
+			if (validateUser) {
+				const mqttClient = await mqtt.connectAsync('mqtt://maqiatto.com');
+				console.log('MQTT start');
+				try {
+					const topic = 'manuelrg88@gmail.com/gardenbot/devices';
+					const message = JSON.stringify(order);
+					console.log(message);
+					await mqttClient.publish(topic, message);
+					await mqttClient.end();
+					console.log('MQTT finished');
+					return 'Order published succesfully!';
+				} catch (e) {
+					throw new Error('MQTT connection error');
+				}
+			} else {
+				throw new Error('Invalid token');
 			}
 		},
 	},

@@ -58,6 +58,12 @@ module.exports = gql`
 		confirmPassword: String!
 		email: String!
 	}
+	
+	input Order {
+		deviceId: ID!
+		status: Boolean!
+		devicePin: Int!
+	}
 
 	type Query {
 		#FORUM QUERIES
@@ -90,7 +96,7 @@ module.exports = gql`
 			deviceId: ID!
 		): Measure!
 		renameDevice(deviceId:ID!, newName:String!): User!
-
+		sendMqttOrder(order: Order): String!
 		
 	}
 

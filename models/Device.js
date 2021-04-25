@@ -6,4 +6,4 @@ const deviceSchema = mongoose.Schema({
 	isActivated: { type: Boolean, default: false },
 });
 
-module.exports = mongoose.model('device', deviceSchema);
+module.exports = mongoose.model('Device', deviceSchema);
