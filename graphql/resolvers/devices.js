@@ -118,7 +118,7 @@ module.exports = {
 		async sendMqttOrder(_, { order }, context) {
 			const validateUser = checkAuth(context);
 			if (validateUser) {
-				const mqttClient = await mqtt.connectAsync('mqtt://maqiatto.com');
+				const mqttClient = await mqtt.connectAsync('mqtt://maqiatto.com', { username: "manuelrg88@gmail.com", password: "Mg412115" });
 				console.log('MQTT start');
 				try {
 					const topic = 'manuelrg88@gmail.com/gardenbot/devices';
