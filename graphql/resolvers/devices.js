@@ -115,19 +115,18 @@ module.exports = {
 				throw new Error('Invalid device name or user');
 			}
 		},
-		async sendMqttOrder(_, { order }, context) {
+		async sendMqttOrder(_, { payload }, context) {
 			const validateUser = checkAuth(context);
 			if (validateUser) {
 				const mqttClient = await mqtt.connectAsync('mqtt://maqiatto.com', { username: "manuelrg88@gmail.com", password: "Mg412115" });
 				console.log('MQTT start');
 				try {
 					const topic = 'manuelrg88@gmail.com/gardenbot/devices';
-					const message = JSON.stringify(order);
-					console.log(message);
+					const message = JSON.stringify(payload);
 					await mqttClient.publish(topic, message);
 					await mqttClient.end();
 					console.log('MQTT finished');
-					return 'Order published succesfully!';
+					return 'Payload published succesfully!';
 				} catch (e) {
 					throw new Error('MQTT connection error');
 				}
