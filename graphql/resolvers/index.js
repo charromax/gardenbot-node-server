@@ -3,7 +3,8 @@ const usersResolvers = require('./users');
 const commentsResolvers = require('./comments');
 const likesResolvers = require('./likes');
 const measuresResolvers = require('./measures');
-const devicesResolvers = require('./devices')
+const devicesResolvers = require('./devices');
+const notificationsResolvers = require('./notifications');
 
 module.exports = {
 	Post: {
@@ -17,7 +18,8 @@ module.exports = {
 		...postsResolvers.Query,
 		...measuresResolvers.Query,
 		...usersResolvers.Query,
-		...devicesResolvers.Query
+		...devicesResolvers.Query,
+		...notificationsResolver.Query,
 	},
 	Mutation: {
 		...usersResolvers.Mutation,
@@ -25,12 +27,14 @@ module.exports = {
 		...commentsResolvers.Mutation,
 		...likesResolvers.Mutation,
 		...measuresResolvers.Mutation,
-		...devicesResolvers.Mutation
+		...devicesResolvers.Mutation,
+		...notificationsResolvers.Mutation,
 	},
 
 	Subscription: {
 		...postsResolvers.Subscription,
 		...measuresResolvers.Subscription,
-		...devicesResolvers.Subscription
+		...devicesResolvers.Subscription,
+		...notificationsResolvers.Subscription,
 	},
 };

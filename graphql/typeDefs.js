@@ -52,6 +52,14 @@ module.exports = gql`
 		soilHum: Float!
 	}
 
+	type Notification {
+		id: ID!,
+		createdAt: String!
+		type: String!
+		priority: String!
+		message: String!
+	}
+
 	input RegisterInput {
 		username: String!
 		password: String!
@@ -102,13 +110,18 @@ module.exports = gql`
 		): Measure!
 		renameDevice(deviceId:ID!, newName:String!): User!
 		sendMqttOrder(payload: Payload): String!
-		
+		addNotification(
+			deviceId:ID!,
+			type: String!,
+			priority: String!,
+			message: String!): String!
 	}
 
 	type Subscription {
 		newPost: Post!
 		newMeasure(devId:ID!): Measure!
 		newDevice(devName: String!): Device!
+		newNotification(devId: ID!): Notification!
 	}
 
 	schema {
