@@ -61,7 +61,7 @@ type Post {
 		getPosts: [Post]
 		getPost(postId: ID!): Post
 
-		#GARDENBOT QUERIES
+		# GARDENBOT QUERIES
 		getMeasures(deviceId: ID!): [Measure]!
 		refreshToken: String!
 		getAllDevices: [Device]!
@@ -95,6 +95,7 @@ type Post {
 		newPost: Post!
 		newMeasure(devId:ID!): Measure!
 		newDevice(devName: String!): Device!
+		newNotification(devId: ID!): Notification!
 	}
 
 	schema {

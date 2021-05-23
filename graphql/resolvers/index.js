@@ -27,6 +27,7 @@ module.exports = {
 		...likesResolvers.Mutation,
 		...measuresResolvers.Mutation,
 		...devicesResolvers.Mutation,
+		...notificationsResolvers.Mutation,
 	},
 
 	Subscription: {
