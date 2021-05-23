@@ -112,8 +112,7 @@ module.exports = gql`
 		sendMqttOrder(payload: Payload): String!
 		addNotification(
 			deviceId:ID!,
-			type: String!,
-			priority: String!,
+			code: Int!,
 			message: String!): String!
 	}
 
