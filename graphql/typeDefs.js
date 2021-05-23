@@ -55,8 +55,8 @@ module.exports = gql`
 	type Notification {
 		id: ID!,
 		createdAt: String!
-		type: String!
-		priority: String!
+		deviceId: ID!
+		code: Int!
 		message: String!
 	}
 
