@@ -49,6 +49,13 @@ type Post {
 		soilHum: Float!
 	}
 
+	type Notification {
+		createdAt: String!
+		deviceId: ID!
+		code: Int!
+		message: String!
+	}
+
 	input RegisterInput {
 		username: String!
 		password: String!
@@ -87,8 +94,7 @@ type Post {
 			deviceId: String!
 		): Measure!
 		renameDevice(deviceId:ID!, newName:String!): User!
-
-		
+		addNotification(deviceId: ID!, code: Int!, message: String!): Notification!
 	}
 
 	type Subscription {
