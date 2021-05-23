@@ -19,6 +19,7 @@ export const resolvers = {
 		newNotification: {
 			subscribe: withFilter((_, __) => pubsub.asyncIterator(NOTIFICATION_TOPIC),
             (payload, variables) => {
+				console.log("notification received");
                 return payload.newNotification.deviceId === variables.devId;
             }),
 		},
