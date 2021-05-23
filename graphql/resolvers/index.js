@@ -19,7 +19,6 @@ module.exports = {
 		...measuresResolvers.Query,
 		...usersResolvers.Query,
 		...devicesResolvers.Query,
-		...notificationsResolver.Query,
 	},
 	Mutation: {
 		...usersResolvers.Mutation,
@@ -28,7 +27,6 @@ module.exports = {
 		...likesResolvers.Mutation,
 		...measuresResolvers.Mutation,
 		...devicesResolvers.Mutation,
-		...notificationsResolvers.Mutation,
 	},
 
 	Subscription: {
