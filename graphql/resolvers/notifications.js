@@ -21,9 +21,9 @@ module.exports = {
 			subscribe: withFilter(
 				(_, __, { pubsub }) => pubsub.asyncIterator(NEW_NOTIFICATION),
 				(payload, variables) => {
-					return payload.newNotification.deviceId === variables.devId;
+					return (payload.newNotification.deviceId === variables.devId)
 				}
-			),
+			)
 		},
 	},
 };
