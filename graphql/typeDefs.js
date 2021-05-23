@@ -113,7 +113,7 @@ module.exports = gql`
 		addNotification(
 			deviceId:ID!,
 			code: Int!,
-			message: String!): String!
+			message: String!): Notification!
 	}
 
 	type Subscription {
