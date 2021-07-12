@@ -10,7 +10,13 @@ module.exports = {
 			console.log({ deviceId, code, message });
 			const device = await Device.findById(deviceId);
 			if (!device) throw new Error('Invalid/Unregistered device');
-			const notification = new Notification({ deviceId, code, message });
+			const now = new Date();
+			const notification = new Notification({
+				createdAt: now.toISOString(),
+				deviceId: deviceId,
+				code: code,
+				message: message,
+			});
 			context.pubsub.publish(NEW_NOTIFICATION, {
 				newNotification: notification,
 			});
